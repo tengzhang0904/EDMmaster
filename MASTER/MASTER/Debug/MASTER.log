@@ -1,0 +1,39 @@
+﻿Build started 2/21/2018 2:45:12 PM.
+     1>Project "C:\MMC_SYSINT\MASTER\MASTER\MASTER.vcxproj" on node 2 (Rebuild target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /D _AFXDLL /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\MASTER.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /D _AFXDLL /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"Debug\MASTER.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt EDMSCANPlotDlg.cpp LoopCtrlUIDlg.cpp MagnetometryDlg.cpp MagnetometryGradDlg.cpp MASTER.cpp MASTERDlg.cpp ntgraphctrl.cpp ParaSweepDlg.cpp SpinPackSWP.cpp StateMapDlg.cpp
+         StateMapDlg.cpp
+         SpinPackSWP.cpp
+         ParaSweepDlg.cpp
+         ntgraphctrl.cpp
+         MASTERDlg.cpp
+         MASTER.cpp
+         MagnetometryGradDlg.cpp
+         MagnetometryDlg.cpp
+         LoopCtrlUIDlg.cpp
+         EDMSCANPlotDlg.cpp
+         Generating Code...
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.0\bin\x86\rc.exe /D _DEBUG /D _AFXDLL /l"0x0409" /IDebug\ /nologo /fo"Debug\MASTER.res" MASTER.rc 
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\MMC_SYSINT\MASTER\Debug\MASTER.exe" /INCREMENTAL /NOLOGO /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\Include\Manifest\dpiaware.manifest" /DEBUG /PDB:"C:\MMC_SYSINT\MASTER\Debug\MASTER.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\MMC_SYSINT\MASTER\Debug\MASTER.lib" /MACHINE:X86 Debug\MASTER.res
+         Debug\EDMSCANPlotDlg.obj
+         Debug\LoopCtrlUIDlg.obj
+         Debug\MagnetometryDlg.obj
+         Debug\MagnetometryGradDlg.obj
+         Debug\MASTER.obj
+         Debug\MASTERDlg.obj
+         Debug\ntgraphctrl.obj
+         Debug\ParaSweepDlg.obj
+         Debug\SpinPackSWP.obj
+         Debug\StateMapDlg.obj
+         Debug\stdafx.obj
+     1>LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+         MASTER.vcxproj -> C:\MMC_SYSINT\MASTER\Debug\MASTER.exe
+     1>Done Building Project "C:\MMC_SYSINT\MASTER\MASTER\MASTER.vcxproj" (Rebuild target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:14.00

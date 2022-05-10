@@ -1,0 +1,58 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Demo - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x407 /fo"Release/Demo.res" /d "NDEBUG" /d "_AFXDLL" "E:\Microsoft Visual Studio\MyProjects\NTGraph2D_OCX\NTGraph_ActiveX\NTGraph_Demo\DlgDemo\Demo.rc"" 
+Creating temporary file "C:\DOKUME~1\ADMINI~1\LOKALE~1\Temp\RSP4B.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/Demo.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"E:\Microsoft Visual Studio\MyProjects\NTGraph2D_OCX\NTGraph_ActiveX\NTGraph_Demo\DlgDemo\Demo.cpp"
+"E:\Microsoft Visual Studio\MyProjects\NTGraph2D_OCX\NTGraph_ActiveX\NTGraph_Demo\DlgDemo\DemoDlg.cpp"
+"E:\Microsoft Visual Studio\MyProjects\NTGraph2D_OCX\NTGraph_ActiveX\NTGraph_Demo\DlgDemo\font.cpp"
+"E:\Microsoft Visual Studio\MyProjects\NTGraph2D_OCX\NTGraph_ActiveX\NTGraph_Demo\DlgDemo\ntgraph.cpp"
+"E:\Microsoft Visual Studio\MyProjects\NTGraph2D_OCX\NTGraph_ActiveX\NTGraph_Demo\DlgDemo\picture.cpp"
+]
+Creating command line "cl.exe @C:\DOKUME~1\ADMINI~1\LOKALE~1\Temp\RSP4B.tmp" 
+Creating temporary file "C:\DOKUME~1\ADMINI~1\LOKALE~1\Temp\RSP4C.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/Demo.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"E:\Microsoft Visual Studio\MyProjects\NTGraph2D_OCX\NTGraph_ActiveX\NTGraph_Demo\DlgDemo\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOKUME~1\ADMINI~1\LOKALE~1\Temp\RSP4C.tmp" 
+Creating temporary file "C:\DOKUME~1\ADMINI~1\LOKALE~1\Temp\RSP4D.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:no /pdb:"Release/Demo.pdb" /machine:I386 /out:"Release/Demo.exe" 
+".\Release\Demo.obj"
+".\Release\DemoDlg.obj"
+".\Release\font.obj"
+".\Release\ntgraph.obj"
+".\Release\picture.obj"
+".\Release\StdAfx.obj"
+".\Release\Demo.res"
+]
+Creating command line "link.exe @C:\DOKUME~1\ADMINI~1\LOKALE~1\Temp\RSP4D.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+Demo.cpp
+DemoDlg.cpp
+E:\Microsoft Visual Studio\MyProjects\NTGraph2D_OCX\NTGraph_ActiveX\NTGraph_Demo\DlgDemo\DemoDlg.cpp(351) : warning C4244: 'argument' : conversion from 'long' to 'short', possible loss of data
+font.cpp
+ntgraph.cpp
+picture.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+Demo.exe - 0 error(s), 1 warning(s)
+</pre>
+</body>
+</html>
