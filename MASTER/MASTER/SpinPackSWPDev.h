@@ -216,8 +216,8 @@ bool SpinPackDev::WriteSpinPackTXT(string filename)
     flag=!(datalog.fail()); //check if file is open
  if (flag)
   {
-	datalog<<ACTSTEP<<endl; 
-	for (int i=0; i<ACTSTEP;i++)
+	datalog<<ACTSTEP<<endl;  // first line is the # of steps 
+	for (int i=0; i<ACTSTEP;i++) 
 	{
 		for(int j=0; j<VertSubSec*2+1;j++)
 		{

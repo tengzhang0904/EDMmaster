@@ -44,7 +44,7 @@ using namespace std;
 /***************************************************************/
 const extern double  FIFOCLK=2000000.0;  //PCI6534 FIFO UPDATE CLK [4.656613e-3, 20e6]Hz
 const extern double  GPSCLK=10000000.0;  //10MHz GPS CLK
-const extern float Timeout=-1;  //Max time waiting for trigger, in seconds
+const extern float Timeout=60.0;  //Max time waiting for trigger, in seconds
 
 const int SAMPLE_NUMBER=200000; //initial sample number estimate (1ms pulse ~ 2000 samples)
 const extern int INCRT_SIZE=20000; //step size for an expanion of array length when outranging 

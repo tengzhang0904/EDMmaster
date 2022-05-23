@@ -12,7 +12,7 @@
 IMPLEMENT_DYNAMIC(LoopCtrlUIDlg, CDialogEx)
 
 LoopCtrlUIDlg::LoopCtrlUIDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(LoopCtrlUIDlg::IDD, pParent) //Initializer list
+	: CDialogEx(LoopCtrlUIDlg::IDD, pParent)
 	, m_MAG_SCAN_header(_T("B"))
 	, m_LarmorThreshold(1000.1)
 	, m_MAG_SCAN_MAX_ITERATIONS(3)
@@ -21,7 +21,9 @@ LoopCtrlUIDlg::LoopCtrlUIDlg(CWnd* pParent /*=NULL*/)
 	, m_EDM_SCAN_STEPS(64)
 	, m_AutoMasterLoop_REPEATS(1)
 {
-	UpdateAndStart=FALSE; //Construct (after Initializer)
+	UpdateAndStart=FALSE;
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON4);// set the icon
+
 }
 
 LoopCtrlUIDlg::~LoopCtrlUIDlg()
@@ -47,7 +49,15 @@ END_MESSAGE_MAP()
 
 
 // LoopCtrlUIDlg message handlers
-
+BOOL LoopCtrlUIDlg::OnInitDialog()
+{   
+	CDialogEx::OnInitDialog();
+	// Set the icon for this dialog.  The framework does this automatically
+	//  when the application's main window is not a dialog
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+	return TRUE;
+}
 
 void LoopCtrlUIDlg::OnBnClickedButtonMasterloopConfirm()
 {

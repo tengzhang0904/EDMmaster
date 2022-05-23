@@ -12,7 +12,7 @@
 IMPLEMENT_DYNAMIC(MagnetometryDlg, CDialogEx)
 
 MagnetometryDlg::MagnetometryDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(MagnetometryDlg::IDD, pParent) //Initializer list
+	: CDialogEx(MagnetometryDlg::IDD, pParent)
 	, m_BPYP(_T(""))
 	, m_BPYC(_T(""))
 	, m_BPYN(_T(""))
@@ -22,6 +22,7 @@ MagnetometryDlg::MagnetometryDlg(CWnd* pParent /*=NULL*/)
 	, m_DPDY(_T(""))
 	, m_DPDZ(_T(""))
 {
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON3);// set the icon
 }
 
 MagnetometryDlg::~MagnetometryDlg()
@@ -52,7 +53,15 @@ END_MESSAGE_MAP()
 
 
 // MagnetometryDlg message handlers
-
+BOOL MagnetometryDlg::OnInitDialog()
+{   
+	CDialogEx::OnInitDialog();
+	// Set the icon for this dialog.  The framework does this automatically
+	//  when the application's main window is not a dialog
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+	return TRUE;
+}
 
 //Linear cross method
 void MagnetometryDlg::OnBnClickedButtonLinearCross()
@@ -415,7 +424,8 @@ if (flag)
 }
 
 
-//Displot analyzed spin precession data using S(t) sine fit method
+//Displot analyzed spin precession data using S(t) sine fit method 
+// this func. needs to be taken care of because the spin data is either w/ scanned B field or time 1 at a time
 void MagnetometryDlg::OnBnClickedButtSine()
 {
 	bool flag=false;

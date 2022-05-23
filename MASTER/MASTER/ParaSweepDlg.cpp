@@ -21,6 +21,7 @@ ParaSweepDlg::ParaSweepDlg(CWnd* pParent /*=NULL*/)
 	, m_SWP_Type(0)
 {
 	m_DoStartScan=FALSE;
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON1);// set the icon
 }
 
 ParaSweepDlg::~ParaSweepDlg()
@@ -46,6 +47,15 @@ END_MESSAGE_MAP()
 
 
 // ParaSweepDlg message handlers
+BOOL ParaSweepDlg::OnInitDialog()
+{   
+	CDialogEx::OnInitDialog();
+	// Set the icon for this dialog.  The framework does this automatically
+	//  when the application's main window is not a dialog
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+	return TRUE;
+}
 
 
 void ParaSweepDlg::OnBnClickedOk()

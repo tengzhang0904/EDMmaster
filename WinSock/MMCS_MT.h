@@ -20,8 +20,8 @@ void MMCS(unsigned int id, string loops)
 {
     //sequence file name definition and sequence selection
 	string sequences[TotNumSeq]={//*.dt4 file names can not contain spaces
-	                             "MicrowaveTransitionsBNew.dt4",
-	                             "MOToptimizeLoadingRate.dt4",
+		"Multiple_4_uW_7_levels_precession_Bz.dt4",
+	    "Multiple_4_uW_7_levels_precession_Bx.dt4",
 	                             "LaunchImageBottom+Z.dt4",
 								 "Default_shiftLattice+Z.dt4",
 	                             "LifetimeWithOP.dt4"};

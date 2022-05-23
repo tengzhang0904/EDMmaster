@@ -28,6 +28,7 @@ EDMSCANPlotDlg::EDMSCANPlotDlg(CWnd* pParent /*=NULL*/)
 	, m_ellipse_selected(true)
 {
 	Message="EDM SCAN REPORT";
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON2);// set the icon
 }
 
 EDMSCANPlotDlg::~EDMSCANPlotDlg()
@@ -48,6 +49,16 @@ void EDMSCANPlotDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(EDMSCANPlotDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTT_EDMSCAN_PLOTANA, &EDMSCANPlotDlg::OnBnClickedButtEdmscanPlotana)
 END_MESSAGE_MAP()
+
+BOOL EDMSCANPlotDlg::OnInitDialog()
+{   
+	CDialogEx::OnInitDialog();
+	// Set the icon for this dialog.  The framework does this automatically
+	//  when the application's main window is not a dialog
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+	return TRUE;
+}
 
 
 //read analyzed SCAN file

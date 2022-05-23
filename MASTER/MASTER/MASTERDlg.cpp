@@ -206,8 +206,6 @@ BEGIN_MESSAGE_MAP(CMASTERDlg, CDialogEx)
 	ON_COMMAND(ID_ANALYZE_VIEWEDMSCANDATA, &CMASTERDlg::OnAnalyzeViewedmscandata)
 	ON_COMMAND(ID_COMPOSITE_AUTOMATEDEDM, &CMASTERDlg::OnCompositeAutomatededm)
 	ON_COMMAND(ID_COMPOSITE_AUTOMAGNETOMETRY, &CMASTERDlg::OnCompositeAutomagnetometry)
-	ON_EN_CHANGE(IDC_HVvol, &CMASTERDlg::OnEnChangeHvvol)
-	ON_BN_CLICKED(IDC_BUTTONZero, &CMASTERDlg::OnBnClickedButtonZero) 
 END_MESSAGE_MAP()
 
 
@@ -244,24 +242,23 @@ BOOL CMASTERDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	//Add sequence names
-	m_SEQNAME.AddString("Unspecified");
-	m_SEQNAME.AddString("EDM Shot Scan");
-	m_SEQNAME.AddString("Zero Magnetic Field I");
-	m_SEQNAME.AddString("Zero Magnetic Field II");
-	m_SEQNAME.AddString("Microwave Transitions");
-	m_SEQNAME.AddString("Loading MOT");
-    m_SEQNAME.SetCurSel(0); //default choice
+	m_SEQNAME.AddString("PzMz");
+	m_SEQNAME.AddString("PzMx");
+	m_SEQNAME.AddString("PyMz");
+	m_SEQNAME.AddString("PyMx");
+	m_SEQNAME.AddString("PzMz");
+	m_SEQNAME.SetCurSel(0); //default choice
 
 	//NTGraph init
 	m_GRAPH_PDA.SetFrameStyle(5);
-	m_GRAPH_PDA.SetXLabel("Pixels  +Z[1,25]  -Z[25,50]");
+	m_GRAPH_PDA.SetXLabel("Pixels  -Z[1,25]  +Z[25,50]");
     m_GRAPH_PDA.SetYLabel("Atom Signal (a.u.)");
-	m_GRAPH_PDA.SetCaption(" PDA Signal  ");
+	m_GRAPH_PDA.SetCaption("   ");
 	m_GRAPH_PDA.AutoRange();
 
 	//Sweep progress bar
 	m_SWPPROGRESSCtrl.SetBkColor(RGB(216, 191, 216));
-    m_SWPPROGRESSCtrl.SetBarColor(RGB(128, 255, 0));
+    m_SWPPROGRESSCtrl.SetBarColor(RGB(148, 0, 211));
 
 	//Analysis report 
 	m_RICHEDIT_RPTCTRL.SetBackgroundColor(false,RGB(238, 221, 130));
@@ -460,8 +457,6 @@ void CMASTERDlg::OnHelpDocumentation()
 
 //Implementation for Single tasks
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 void CMASTERDlg::OnBnClickedButtonmicrowave()
 {
 	ShellExecute(NULL,NULL,MMCfolderC+_T("/DDS/PulseTrainParameters.xls"),NULL,NULL,SW_SHOWNORMAL);
@@ -525,7 +520,8 @@ void CMASTERDlg::OnMicrowaveddsCalculateandoutput()
 
 void CMASTERDlg::OnAtomicAudiotransitions()
 {
-	Audio(1); //use parameters in row 2, which is row 3 shown in the excel file.
+	//Audio(1); //use parameters in row 2
+	AudioDoppio(1);
 	m_BULLETIN=_T("Audio Transitions data computation and output complete");
 	UpdateData(FALSE);
 }
@@ -573,7 +569,7 @@ void CMASTERDlg::OnAtomicCurrentsource()
 	double cur[8]={0.0};
 	ReadCoilCurrent(cur);
 	UpdateAllCurrents(cur[0],cur[1],cur[2],cur[3],cur[4],cur[5],cur[6],cur[7]);
-	m_BULLETIN=_T("Current source output complete");
+	//m_BULLETIN=_T("Current source output complete");
 	
 	string curs="Update currents (uA)\n"; //output message
 	for (int i=0; i<8; i++)
@@ -758,7 +754,7 @@ void CMASTERDlg::OnBnClickedButtonParasweep()
 		if (SWP_File==3) //delay timing selected
 		    threads.push_back(std::thread(TimingPause, StepValue));
 	    if (m_Parallel_Audio)
-		    threads.push_back(std::thread(Audio, 1));
+		    threads.push_back(std::thread(AudioDoppio, 1));
 	    if (m_Parallel_DDS) 
 		    threads.push_back(std::thread(DDS, 1, 2));   //choose option 2 for output .txt and 3 for calculate-output .xls
 	    if (m_Parallel_HV) 
@@ -1015,8 +1011,8 @@ void CMASTERDlg::OnDatabaseLoadpaneldata()
 	     //Plot renormalized state population
 		 if (PDANshot==8)
 		 {
-           //StateMapDlg Dlg;
-	       //Dlg.DoModal();
+           StateMapDlg Dlg;
+	       Dlg.DoModal();
 		 }
 
 	}
@@ -1083,12 +1079,14 @@ bool CMASTERDlg::ComputeAvgSpin()
 		unsigned int badshot=SWPSTPMAX; //data index for a bad shot, aka, no atom signal
 	
 		//index range to integrate: full range is [0,24] pixel
-	    unsigned int IDXrange_BPYP[2]={10, 14}; //+Z top
-	    unsigned int IDXrange_BPYC[2]={15, 19}; //+Z center
-	    unsigned int IDXrange_BPYN[2]={20, 24}; //+Z bottom
-	    unsigned int IDXrange_BNYP[2]={10, 14}; //+Z top
-	    unsigned int IDXrange_BNYC[2]={15, 19}; //+Z centr
-	    unsigned int IDXrange_BNYN[2]={20, 24}; //+Z bottom
+	    unsigned int IDXrange_BPYP[2]={4, 12}; //+Z top
+	    unsigned int IDXrange_BPYC1[2]={21, 24}; //+Z center1
+		unsigned int IDXrange_BPYC2[2]={0, 3}; //+Z center2
+	    unsigned int IDXrange_BPYN[2]={13, 20}; //+Z bottom
+	    unsigned int IDXrange_BNYP[2]={4, 12}; //-Z top
+	    unsigned int IDXrange_BNYC1[2]={21, 24}; //-Z center1
+		unsigned int IDXrange_BNYC2[2]={0, 3}; //-Z center2
+	    unsigned int IDXrange_BNYN[2]={13, 20}; //-Z bottom
 
 		//Compute integrated population and average spin for each measurement
 		/******************************************************************************************************************/
@@ -1116,12 +1114,14 @@ bool CMASTERDlg::ComputeAvgSpin()
                 for (unsigned int ID=0; ID<PDANshot-1; ID++) 
 	            {
 					double IntRet[2]={0.0,0.0}; //Integrated population for an intermediate curve
-		           	SignalSum(CurrentPack, ID, IntRet, IDXrange_BPYP); PopInte[ID][0]=IntRet[0]; //+Z top
-					SignalSum(CurrentPack, ID, IntRet, IDXrange_BPYC); PopInte[ID][1]=IntRet[0]; //+Z center
-					SignalSum(CurrentPack, ID, IntRet, IDXrange_BPYN); PopInte[ID][2]=IntRet[0]; //+Z bottom
-		           	SignalSum(CurrentPack, ID, IntRet, IDXrange_BNYP); PopInte[ID][3]=IntRet[1]; //-Z top
-					SignalSum(CurrentPack, ID, IntRet, IDXrange_BNYC); PopInte[ID][4]=IntRet[1]; //-Z center
-					SignalSum(CurrentPack, ID, IntRet, IDXrange_BNYN); PopInte[ID][5]=IntRet[1]; //-Z bottom
+		           	SignalSum(CurrentPack, ID, IntRet, IDXrange_BPYP); PopInte[ID][0]=IntRet[0]; //-Z top
+					SignalSum(CurrentPack, ID, IntRet, IDXrange_BPYC1); PopInte[ID][1]=IntRet[0]; //-Z center1
+					SignalSum(CurrentPack, ID, IntRet, IDXrange_BPYC2); PopInte[ID][1]+=IntRet[0]; //-Z center2
+					SignalSum(CurrentPack, ID, IntRet, IDXrange_BPYN); PopInte[ID][2]=IntRet[0]; //-Z bottom
+		           	SignalSum(CurrentPack, ID, IntRet, IDXrange_BNYP); PopInte[ID][3]=IntRet[1]; //+Z top
+					SignalSum(CurrentPack, ID, IntRet, IDXrange_BNYC1); PopInte[ID][4]=IntRet[1]; //+Z center1
+					SignalSum(CurrentPack, ID, IntRet, IDXrange_BNYC2); PopInte[ID][4]+=IntRet[1]; //+Z center2
+					SignalSum(CurrentPack, ID, IntRet, IDXrange_BNYN); PopInte[ID][5]=IntRet[1]; //+Z bottom
 	            } 
 		        UpdateData(FALSE);
 		        delete CurrentPack;
@@ -1139,7 +1139,7 @@ bool CMASTERDlg::ComputeAvgSpin()
 		   double AtomSignalDenom=0.0; //total population for each subsection
 		   double TotalSignal=0.0; //total signal for all sections
 		   TotalSignal=0.0;
-		   for(int p=0; p<VertSubSec*2; p++) //p- section id
+		   for(int p=0; p<VertSubSec; p++) //p- section id // this is modified from VertSubSec*2 to VertSubSec
 			{  
 			   AtomSignalDenom=0.0; //reset the denominator [this is necessary]
 			   AvgSpin[k][p]=0.0; //reset the spin [this is necessary]
@@ -1153,7 +1153,7 @@ bool CMASTERDlg::ComputeAvgSpin()
 			}
 
 		   //string badshotdata=to_string(k)+": "+to_string(TotalSignal); AfxMessageBox(badshotdata.c_str());
-		   if (TotalSignal<0.5) //label a shot with very low atom signal as bad shot
+		   if (TotalSignal<1.0) //label a shot with very low atom signal as bad shot
 		   {
 			   badshot=k; 
 		   }
@@ -1184,21 +1184,24 @@ bool CMASTERDlg::ComputeAvgSpin()
 			{
 				for(int p=0; p<VertSubSec*2; p++) //p- section id
 				{
-					AvgSpin[badshot][p]=2.0*AvgSpin[badshot+1][p]-AvgSpin[badshot+2][p];
+					//AvgSpin[badshot][p]=2.0*AvgSpin[badshot+1][p]-AvgSpin[badshot+2][p];
+					AvgSpin[badshot][p]=0;
 				}
 			}
 			else if (badshot==IDXend)  //last shot
 			{
 				for(int p=0; p<VertSubSec*2; p++) //p- section id
 				{
-					AvgSpin[badshot][p]=2.0*AvgSpin[badshot-1][p]-AvgSpin[badshot-2][p];
+					//AvgSpin[badshot][p]=2.0*AvgSpin[badshot-1][p]-AvgSpin[badshot-2][p];
+					AvgSpin[badshot][p]=0;
 				}
 			}
 			else   //intermediate shot
 			{
 				for(int p=0; p<VertSubSec*2; p++) //p- section id
 				{
-					AvgSpin[badshot][p]=(AvgSpin[badshot-1][p]+AvgSpin[badshot+1][p])/2.0;
+					//AvgSpin[badshot][p]=(AvgSpin[badshot-1][p]+AvgSpin[badshot+1][p])/2.0;
+					AvgSpin[badshot][p]=0;
 				}
 			}
 		}
@@ -1250,7 +1253,7 @@ void CMASTERDlg::OnCompositeMagnetometryBiasScan()
 {
 	this->ComputeAvgSpin(); //Compute Average spin from a list of datapack files
 
-	string SpinFile=MMCfolder+"LAB_DAT/"+"Spin"+".txt";//spin sweep data file name
+	string SpinFile=MMCfolder+"LAB_DAT/"+(LPCTSTR)m_DATASET_FILE+"Spin"+".txt";//spin sweep data file name
 	string AnalyzedSpinFile=MMCfolder+"LAB_DAT/"+"BiasAnalyzed"+".txt"; //Analyzed spin pack file, with fitting coefficients
 
 	SpinPackDev *SavedSpinPack=new SpinPackDev(); //Spin Pack object for spin data from a field sweep 
@@ -1290,7 +1293,7 @@ void CMASTERDlg::OnCompositeLoadspindatasweep()
 {
 	UpdateData(); //get current setting
 	string savedfilePrefix=MMCfolder+"LAB_DAT/"+(LPCTSTR)m_DATASET_FILE;  //enter spin file name prefix in the txet box
-	string SpinFile=savedfilePrefix+".txt";//spin sweep data file name
+	string SpinFile=savedfilePrefix+"Spin.txt";//spin sweep data file name
 	string AnalyzedSpinFile=MMCfolder+"LAB_DAT/"+"BiasAnalyzed"+".txt"; //Analyzed spin pack file, with fitting coefficients
 
 	SpinPackDev *SavedSpinPack=new SpinPackDev(); //Spin Pack object for spin data from a field sweep 
@@ -1330,7 +1333,7 @@ void CMASTERDlg::OnMenuMagnetometryGradScan()
 {
 	this->ComputeAvgSpin(); //Compute Average spin from a list of datapack files
 
-	string SpinFile=MMCfolder+"LAB_DAT/"+"Spin"+".txt";//spin sweep data file name
+	string SpinFile=MMCfolder+"LAB_DAT/"+(LPCTSTR)m_DATASET_FILE+"Spin"+".txt";//spin sweep data file name
 	string AnalyzedSpinFile=MMCfolder+"LAB_DAT/"+"GradAnalyzed"+".txt"; //Analyzed spin pack file, with fitting coefficients
 
 	SpinPackDev *SavedSpinPack=new SpinPackDev(); //Spin Pack object for spin data from a field sweep 
@@ -1368,7 +1371,7 @@ void CMASTERDlg::OnCompositeAnalyzegrad()
 {
 	UpdateData(); //get current setting
 	string savedfilePrefix=MMCfolder+"LAB_DAT/"+(LPCTSTR)m_DATASET_FILE;  //enter spin file name prefix in the txet box
-	string SpinFile=savedfilePrefix+".txt";//spin sweep data file name
+	string SpinFile=savedfilePrefix+"Spin.txt";//spin sweep data file name
 	string AnalyzedGradFile=MMCfolder+"LAB_DAT/"+"GradAnalyzed"+".txt"; //Analyzed spin pack file, with fitting coefficients
 
 	SpinPackDev *SavedSpinPack=new SpinPackDev(); //Spin Pack object for spin data from a field sweep 
@@ -1407,8 +1410,8 @@ void CMASTERDlg::OnCompositeAnalyzegrad()
 void CMASTERDlg::OnCompositeSpinsweeptruncate()
 {
 	UpdateData(); //get current setting
-	string SpinFile=MMCfolder+"LAB_DAT/"+(LPCTSTR)m_DATASET_FILE+".txt"; 
-	string TruncSpinFile=MMCfolder+"LAB_DAT/"+(LPCTSTR)m_DATASET_FILE+"+.txt"; 
+	string SpinFile=MMCfolder+"LAB_DAT/"+(LPCTSTR)m_DATASET_FILE+"Spin.txt"; 
+	string TruncSpinFile=MMCfolder+"LAB_DAT/"+(LPCTSTR)m_DATASET_FILE+"+Spin.txt"; 
 	int IDXstart=m_PACIDXstart, IDXend=m_PACIDXend; //data index for spin sweep truncation
 
 
@@ -2264,33 +2267,3 @@ void CMASTERDlg::OnCompositeAutomatededm()
 
 }
 
-
-void CMASTERDlg::OnEnChangeHvvol()
-{
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
-
-	// TODO:  Add your control notification handler code here
-}
-
-
-void CMASTERDlg::OnBnClickedButtonZero() // This method is to zero all digital output channels by Teng
-{
-	// Currently the relevant output channels are:
-	// asynchronous digital lines including HV polarity control;
-	// low current source control lines;
-
-	// First zero all asynchronous digital lines:
-	AudioDportZero();
-
-	// Zero all low current control lines
-	double cur[8]={0.0};
-	UpdateAllCurrents(cur[0],cur[1],cur[2],cur[3],cur[4],cur[5],cur[6],cur[7]);
-
-
-	m_BULLETIN=_T("Zero all digital lines complete");
-	UpdateData(FALSE);
-
-}

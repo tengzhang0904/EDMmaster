@@ -14,10 +14,7 @@ StateMapDlg::StateMapDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(StateMapDlg::IDD, pParent)
 	, m_StateMapMessage(_T("Info regarding state poupulation..."))
 {
-	m_hIcon_map = AfxGetApp()->LoadIcon(IDR_MAINFRAME);// This line is added by Teng to test icon
-	// Set the icon for this dialog.  The framework does this automatically
-	//  when the application's main window is not a dialog
-
+	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON2);// set the icon
 
 #ifndef _WIN32_WCE
 	EnableActiveAccessibility();
@@ -39,10 +36,17 @@ void StateMapDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(StateMapDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_PLOTMAP, &StateMapDlg::OnBnClickedButtonPlotmap)
-	//ON_BN_CLICKED(IDC_BUTTON_ZERO, &StateMapDlg::OnBnClickedButtonZero)
 END_MESSAGE_MAP()
 
-
+BOOL StateMapDlg::OnInitDialog()
+{   
+	CDialogEx::OnInitDialog();
+	// Set the icon for this dialog.  The framework does this automatically
+	//  when the application's main window is not a dialog
+	SetIcon(m_hIcon, TRUE);			// Set big icon
+	SetIcon(m_hIcon, FALSE);		// Set small icon
+	return TRUE;
+}
 
 //Plot state population map
 void StateMapDlg::OnBnClickedButtonPlotmap()

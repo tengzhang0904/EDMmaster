@@ -30,6 +30,9 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
+	HICON m_hIcon; // test icon for this dialog
+	virtual BOOL OnInitDialog();
+
 	DECLARE_MESSAGE_MAP()
 public:
 	CNtgraphctrl m_Graph_PZCROSS;
@@ -47,4 +50,6 @@ public:
 	afx_msg void OnBnClickedButtDsdb();
 	afx_msg void AnalyzeDataQuad();
 	afx_msg void OnBnClickedButtSine();
+	afx_msg void OnEnChangeEditDpdz();
+	afx_msg void OnEnChangeEditDpdy();
 };

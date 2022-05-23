@@ -19,6 +19,9 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
+	HICON m_hIcon; // test icon for this dialog
+	virtual BOOL OnInitDialog();
+
 	DECLARE_MESSAGE_MAP()
 public:
 	CString m_MAG_SCAN_header;

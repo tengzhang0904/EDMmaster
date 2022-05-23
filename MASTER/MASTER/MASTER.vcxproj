@@ -157,13 +157,13 @@
     <None Include="res\MASTER.rc2" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\android.ico" />
     <Image Include="res\edm.ico" />
     <Image Include="res\icon1.ico" />
-    <Image Include="res\icon2.ico" />
+    <Image Include="res\magnetic.ico" />
+    <Image Include="res\map.ico" />
     <Image Include="res\MASTER.ico" />
     <Image Include="res\scan.ico" />
-    <Image Include="res\scan.ico.bmp" />
-    <Image Include="res\scan_icon.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -105,7 +105,7 @@ void PDA::Acquire(unsigned short TimeOut) //Acquire PDA data
 	char        errBuff[2048]={'\0'};
     float64     InterleavedData[PDANpixel*PDANshot];//data array to acquire
 	string      ExtCLKTrigger="/Dev3/PFI0"; //External update clock trigger
-	float64     Limits[2]={-5.0,0.5};//Input range in volts: direct output from PDA AMP box is on negative side
+	float64     Limits[2]={-10.0,5.0};//Input range in volts: direct output from PDA AMP box is on negative side
 
 /*
 	//channelID for all 64 channels
@@ -118,13 +118,13 @@ void PDA::Acquire(unsigned short TimeOut) //Acquire PDA data
 	//channelID for Real-time AI (7+7+7+4)+(7+7+7+4) channels, blank out unused channels
 	string      PDART_ChlID="Dev3/ai54:48,Dev3/ai62:56,Dev3/ai38:32,Dev3/ai46:43,Dev3/ai22:16,Dev3/ai30:24,Dev3/ai6:0,Dev3/ai14:11";
     //channelID for Integrated AI (7+7+7+4)+(7+7+7+4) channels, alternate between +Z and -Z sides
-	string      PDA_ChlID_ALTER="Dev3/ai0, Dev3/ai32, Dev3/ai1, Dev3/ai33, Dev3/ai2, Dev3/ai34, Dev3/ai3, Dev3/ai35, Dev3/ai4, Dev3/ai36, Dev3/ai5, Dev3/ai37, Dev3/ai6, Dev3/ai38, "
-		                        "Dev3/ai8, Dev3/ai40, Dev3/ai9, Dev3/ai41, Dev3/ai10, Dev3/ai42, Dev3/ai11, Dev3/ai43, Dev3/ai12, Dev3/ai44, Dev3/ai13, Dev3/ai45, Dev3/ai14, Dev3/ai46, "
-								"Dev3/ai16, Dev3/ai48, Dev3/ai17, Dev3/ai49, Dev3/ai18, Dev3/ai50, Dev3/ai19, Dev3/ai51, Dev3/ai20, Dev3/ai52, Dev3/ai21, Dev3/ai53, Dev3/ai22, Dev3/ai54, "
-								"Dev3/ai24, Dev3/ai56, Dev3/ai25, Dev3/ai57, Dev3/ai26, Dev3/ai58, Dev3/ai27, Dev3/ai59";
-
+	string      PDA_ChlID_ALTER="Dev3/ai0, Dev3/ai32, Dev3/ai1, Dev3/ai34, Dev3/ai2, Dev3/ai36, Dev3/ai3, Dev3/ai37, Dev3/ai4, Dev3/ai38, Dev3/ai5, Dev3/ai40, Dev3/ai6, Dev3/ai41, "
+		                        "Dev3/ai8, Dev3/ai42, Dev3/ai9, Dev3/ai43, Dev3/ai10, Dev3/ai52, Dev3/ai12, Dev3/ai45, Dev3/ai13, Dev3/ai46, Dev3/ai14, Dev3/ai48, Dev3/ai17, Dev3/ai49, "
+								"Dev3/ai18, Dev3/ai50, Dev3/ai19, Dev3/ai51, Dev3/ai20, Dev3/ai53, Dev3/ai21, Dev3/ai54, Dev3/ai22, Dev3/ai57, Dev3/ai24, Dev3/ai58, Dev3/ai25, Dev3/ai59, "
+								"Dev3/ai26, Dev3/ai61, Dev3/ai27, Dev3/ai62, Dev3/ai28, Dev3/ai30, Dev3/ai29, Dev3/ai56";
+	//string      Integrated_mp="Dev3/ai0:6,Dev3/ai8:10,Dev3/ai12:14,Dev3/ai17:22,Dev3/ai24:29,Dev3/ai32,Dev3/ai34,Dev3/ai36:38,Dev3/ai40:43,Dev3/ai52,Dev3/ai45:46,Dev3/ai48:51,Dev3/ai53:54, Dev3/ai57:59, Dev3/ai61:62, Dev3/ai30, Dev3/ai56";
 	string      ChannelID=PDA_ChlID_ALTER;//Channels in use
-
+	//string      ChannelID=Integrated_mp;//Channels in use
 	/***************************************************************************************
 	 *DAQmx Configure Code: specify channel number,input range, and triggers
 	 *External update clock trigger: 64 samples per rising edge (one sample per channel)

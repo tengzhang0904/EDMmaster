@@ -85,7 +85,7 @@ void TempgetShow(CMASTERDlg *MasterDlg) //Get and display temperature
 
 void Plot2D(CMASTERDlg *MasterDlg) //Plot a curve from DataPack
 {
-  MasterDlg->m_GRAPH_PDA.SetRange(0,50, -0.02, 0.17); //set plot range
+  MasterDlg->m_GRAPH_PDA.SetRange(0,50, -0.02, 1.0); //set plot range
 
   const unsigned int MAXCUR=8; //maximal number of curves
   unsigned long PlotColor[MAXCUR]={RGB(0,0,0),RGB(255,0,0),RGB(0,0,255),RGB(0,100,0),RGB(255,255,0),RGB(148,0,211),RGB(255,105,180),RGB(139,69,19)};
@@ -146,7 +146,7 @@ void PDAgetShow(CMASTERDlg *MasterDlg) //PDA imaging and show
   //calculate overall curve offsets
   for(int k=0;k<PDANshot;k++)
   {
-	  offsets[k]=0.0;
+	  offsets[k]=0.0;/*
 	  if (k!=BKGST)
 	  {
 		  for (int i=1;i<=5;i++)
@@ -155,7 +155,7 @@ void PDAgetShow(CMASTERDlg *MasterDlg) //PDA imaging and show
 			  offsets[k]+=PDAcq->Data[i+25][k];
 		  }
 		  offsets[k]/=10.0;
-	  }
+	  }*/
   }
 
   //remove overall offsets and save as final data
@@ -253,21 +253,20 @@ void MonitorgetShow(CMASTERDlg *MasterDlg, unsigned int ids) //Analog monitors m
     //const string monitorExcelFile=MMCfolder+"MonitorsAI/"+"MonitorsAI.xls";
 	//MonitorA->WriteXLS(monitorExcelFile);
 
-	MasterDlg->m_CAVITYP.Format("%.6f", MonitorA->data[0][2]);// The 1st 2 channels are used for
-	MasterDlg->m_CAVITYN.Format("%.6f", MonitorA->data[0][3]);// leakage currents measurement
-	MasterDlg->m_EXTBX.Format("%.6f", MonitorA->data[0][4]);// So the analog monitor channels
-	MasterDlg->m_EXTBY.Format("%.6f", MonitorA->data[0][5]);// start from the 3rd.
-	MasterDlg->m_EXTBZ.Format("%.6f", MonitorA->data[0][6]);
-	MasterDlg->m_BEAM1.Format("%.6f", MonitorA->data[0][7]);
-	MasterDlg->m_BEAM2.Format("%.6f", MonitorA->data[0][8]);
-	MasterDlg->m_BEAM3.Format("%.6f", MonitorA->data[0][9]);
+	MasterDlg->m_CAVITYP.Format("%.6f", MonitorA->data[0][0]);
+	MasterDlg->m_CAVITYN.Format("%.6f", MonitorA->data[0][1]);
+	MasterDlg->m_EXTBX.Format("%.6f", MonitorA->data[0][2]);
+	MasterDlg->m_EXTBY.Format("%.6f", MonitorA->data[0][3]);
+	MasterDlg->m_EXTBZ.Format("%.6f", MonitorA->data[0][4]);
+	MasterDlg->m_BEAM1.Format("%.6f", MonitorA->data[0][5]);
+	MasterDlg->m_BEAM2.Format("%.6f", MonitorA->data[0][6]);
+	MasterDlg->m_BEAM3.Format("%.6f", MonitorA->data[0][7]);
 	delete MonitorA; 
 }
 
 void HVgetShow(CMASTERDlg *MasterDlg, int opt) //HV voltage and leakage measure and display
 {   
-	float HVdata;
-	float64 HVleakTop, HVleakBot;
+	float HVdata, HVleak;
 	switch(opt)
 	{
 	  case 1:
@@ -275,19 +274,14 @@ void HVgetShow(CMASTERDlg *MasterDlg, int opt) //HV voltage and leakage measure 
 	         MasterDlg->m_HVVOL.Format("%.2f", HVdata);
 		     break;
 	  case 2:
-		  	 //HVleak=(float)52.8; //will be replaced by a device measurement
-			 HVleakTop = TopLeakageAI(0);
-			 HVleakBot = BotLeakageAI(0);
-	         MasterDlg->m_HVLEAK.Format("%.2f, %.2f", HVleakTop, HVleakBot);
+		  	 HVleak=(float)52.8; //will be replaced by a device measurement
+	         MasterDlg->m_HVLEAK.Format("%.1f", HVleak);
 			 break;
-	  case 3: // this case is called during parameter sweep.
+	  case 3:
 		     HVdata=HVDivS();
 	         MasterDlg->m_HVVOL.Format("%.2f", HVdata);
-		  	 //HVleakTop=(float)30.8; //will be replaced by a device measurement
-	         //MasterDlg->m_HVLEAK.Format("%.1f", HVleak);
-			 HVleakTop = TopLeakageAI(0);
-			 HVleakBot = BotLeakageAI(0);
-	         MasterDlg->m_HVLEAK.Format("%.2f, %.2f", HVleakTop, HVleakBot);
+		  	 HVleak=(float)30.8; //will be replaced by a device measurement
+	         MasterDlg->m_HVLEAK.Format("%.1f", HVleak);
 			 break;
 	  default: break;
 	}

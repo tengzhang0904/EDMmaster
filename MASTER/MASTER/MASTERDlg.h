@@ -135,6 +135,4 @@ public:
 	BOOL AutoMAGScan(std::string fileheader, unsigned int MAG_SCAN_Type, double *MAG_SCAN_Range, unsigned int MAG_SCAN_STEPS, double *ScanResults); //Single magnetometry scan function for EDM master loop
 	BOOL AutoMAG4(std::string fileheader, double LarmorPeriodThreshold, unsigned int MAX_NUM_Iterations); //Magnetometry (loop structure w/ >=4 magnetometry scans) function for EDM master loop
 	afx_msg void OnCompositeAutomagnetometry();
-	afx_msg void OnEnChangeHvvol();
-	afx_msg void OnBnClickedButtonZero();
 };

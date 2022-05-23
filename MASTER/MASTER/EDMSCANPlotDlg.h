@@ -38,6 +38,9 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
+	HICON m_hIcon; // test icon for this dialog
+	virtual BOOL OnInitDialog();
+
 	DECLARE_MESSAGE_MAP()
 public:
 	std::vector<SelectPoint> ScanData; //vector for plotting selected channels during a SCAN
@@ -52,5 +55,4 @@ public:
 	BOOL m_ellipse_selected;
 	CNtgraphctrl m_Ramsey_Plot;
 	CNtgraphctrl m_elliptical_plot;
-	afx_msg void OnEnChangeRicheditEdmscanrpt();
 };

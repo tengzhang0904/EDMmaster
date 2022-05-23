@@ -381,8 +381,8 @@ void SignalInte(DataPack *Pack, unsigned int shot, double Result[])
 	for (int i=0; i<PIX; i++)  //copy data (a particular shot)
 	{
 		data[0][i]=i;
-		data[1][i]=Pack->PDA_Signal[i][shot];   //+Z
-		data[2][i]=Pack->PDA_Signal[i+PIX][shot];  //-Z
+		data[1][i]=Pack->PDA_Signal[i][shot];   //-Z
+		data[2][i]=Pack->PDA_Signal[i+PIX][shot];  //+Z
 	}
 		
 	//spline 1d integrate of PDA signal
@@ -410,8 +410,8 @@ bool SignalSum(DataPack *Pack, unsigned int shot, double Result[], unsigned int 
 	for (int i=0; i<PIX; i++)  //copy data (a particular shot)
 	{
 		data[0][i]=i;
-		data[1][i]=Pack->PDA_Signal[i][shot];   //+Z
-		data[2][i]=Pack->PDA_Signal[i+PIX][shot];  //-Z
+		data[1][i]=Pack->PDA_Signal[i][shot];   //-Z
+		data[2][i]=Pack->PDA_Signal[i+PIX][shot];  //+Z
 	}
 
     if ((idx[0]>=idx[1])||(idx[0]<0)||(idx[1]>=25))

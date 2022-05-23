@@ -98,8 +98,7 @@ bool PulseTrain::Compute(string PulseParameterExcelFilename)
     /* CONFIG DDS board
     /*********************************************/
 	//CONFIG PORT D (size-2 Hex)
-	//string DIP="000010";//DIP switch settings-checked 
-	string DIP="000000";//DIP switch has changed since we got this board from Ken, by Teng
+	string DIP="000000";//DIP switch settings-checked 
 	string opt0=Bin2Hex(DIP+"00");//Latch 16-bit data bus, Master Reset
 	string opt1=Bin2Hex(DIP+"01");//Latch 16-bit data bus, Load data into DDS buffer
 	string opt2=Bin2Hex(DIP+"10");//Latch 16-bit data bus, Load data and Update output

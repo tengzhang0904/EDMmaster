@@ -55,6 +55,7 @@ Error:
 		DAQmxWaitUntilTaskDone(taskHandle,Timeout);
 		DAQmxGetWriteTotalSampPerChanGenerated(taskHandle,&generated);
 		cout<<"DDS::Number of samples output sucessfully: "<<generated<<endl;
+		//DAQmxWriteDigitalU32(taskHandle,1,TRUE,Timeout,DAQmx_Val_GroupByScanNumber,[0],&written,NULL);//added by Teng
 		DAQmxStopTask(taskHandle);
 		DAQmxClearTask(taskHandle);
 	}

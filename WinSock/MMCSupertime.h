@@ -30,7 +30,7 @@ using namespace std;
 #pragma comment (lib, "AdvApi32.lib")
 
 
-#define SupertimeIPaddr "192.168.137.10" //Supertime computer IP address
+#define SupertimeIPaddr "128.118.29.8" //Supertime computer IP address
 #define DEFAULT_PORT "8888" //Port number, see settings in "Supertime Master.vi"
 #define DEFAULT_BUFLEN 512   //Max size of a message in bytes
 
