@@ -98,8 +98,7 @@ bool PulseTrain::Compute(string PulseParameterExcelFilename)
     /* CONFIG DDS board
     /*********************************************/
 	//CONFIG PORT D (size-2 Hex)
-	//string DIP="000010";//DIP switch settings-checked 
-	string DIP="000000";//DIP switch has changed since we got this board from Ken, by Teng
+	string DIP="000000";//DIP switch settings-checked 
 	string opt0=Bin2Hex(DIP+"00");//Latch 16-bit data bus, Master Reset
 	string opt1=Bin2Hex(DIP+"01");//Latch 16-bit data bus, Load data into DDS buffer
 	string opt2=Bin2Hex(DIP+"10");//Latch 16-bit data bus, Load data and Update output
@@ -274,6 +273,10 @@ bool PulseTrain::Compute(string PulseParameterExcelFilename)
 				 //Loop 3 times, 2nd time write a 90 degree phase offset
 				 for (unsigned icn=1; icn<=3; icn++)
 				 {
+						//Clear frequency accumulator ACC1 and return to begining frequency FTW1
+                        append(Str2Int(HexAdd(COM_ON,"1F",Bin2Hex(CR1FCLR1),opt2))); 
+		                append(Str2Int(HexAdd(COM_ON,"1F",Bin2Hex(CR1F),opt1))); //Ext. Update clock
+
 				        //Update  Phase register once    
 					    if (icn==2)  CompositePIPhase=0.5; //shift the 2nd pulse by 90 degrees
 				        sPHR=PHR(CompositePIPhase, PI); //PHR(double phase, double unit)
@@ -340,6 +343,160 @@ bool PulseTrain::Compute(string PulseParameterExcelFilename)
 	                            UpdateATW(this, sATW, opt1, opt2, COM_ON); //update output once
 	                        } 
 
+				        /**********************************************************
+	                     * Always set delta frequency word and amplitude to 0              
+	                     * This will also allow the last section to finish output RF */
+	   	                sDFW=DFW(0.0,DDSCLK);  //ZERO DFW
+		                sATW=ATW(0.0); //ZERO AMP
+                        UpdateDFW(this, sDFW, opt1, COM_ON);
+	                    UpdateATW(this, sATW, opt1, opt2, COM_ON); //update output once
+						/***************************************************************************/
+				 }
+			break;
+
+
+		  case 5:   //Composite Blackman PI/2
+		         // Update Frequency Tunning Word once
+	             f_start=f0; //start frequency  
+	             sFTW=FTW(f_start,DDSCLK);  
+				 UpdateFTW(this, sFTW, opt1, COM_ON);  
+
+				 //Loop 2 times, 2nd time write a 90 degree phase offset
+				 for (unsigned icn=1; icn<=2; icn++)
+				 {
+					   //Clear frequency accumulator ACC1 and return to begining frequency FTW1
+                        append(Str2Int(HexAdd(COM_ON,"1F",Bin2Hex(CR1FCLR1),opt2))); 
+		                append(Str2Int(HexAdd(COM_ON,"1F",Bin2Hex(CR1F),opt1))); //Ext. Update clock 
+
+				        //Update  Phase register once    
+					    if (icn==2)  
+						{
+							CompositePIPhase=0.5; //shift the 2nd pulse by 90 degrees
+							sPHR=PHR(CompositePIPhase, PI); //PHR(double phase, double unit)
+							UpdatePHR(this, sPHR, opt1, COM_ON); 
+						}
+
+                        //Real-time update delta frequency word and amplitude
+	                    UPDATE_REG_SIZE=2; 
+						sections=(unsigned int)floor((duration)*FIFOCLK/UPDATE_REG_SIZE);  //half duration
+
+                        for (unsigned int i=1;i<=sections;i++)
+	                        {         
+		                        //Update amplitude once
+	                            sATW=ATW(Blackman(AMP_PK, (double)i/sections));  //cout<<sATW<<"\n";
+								//sATW=ATW(1.0);  
+                                UpdateATW(this, sATW, opt1, opt2, COM_ON); //update output once
+	                        } 
+
+                        /*************************************************************
+	                     * Always set amplitude to 0               
+	                     * This will also allow the last section to finish output RF */
+		                 sATW=ATW(0.0); //ZERO AMP
+                         UpdateATW(this, sATW, opt1, opt2, COM_ON); //update output once
+						/***************************************************************************/
+				 }
+			break;
+
+		case 6:   //Half Adiabatic Rapid Passage, pulse stops at full intensity
+                 // Update Frequency Tunning Word once
+	             f_start=f0-HSR; //start frequency  
+	             sFTW=FTW(f_start,DDSCLK);  
+				 UpdateFTW(this, sFTW, opt1, COM_ON);
+
+                //Real-time update delta frequency word and amplitude
+	             UPDATE_REG_SIZE=8; 
+	             sections=(unsigned int)floor(duration*FIFOCLK/UPDATE_REG_SIZE); 
+
+                 for (unsigned int i=1;i<=unsigned int(sections/2);i++)
+	                { 
+	                   //Frequency start-end difference for each section
+	                   DFLS=Freq(f0,HSR,(double)i/sections)-Freq(f0,HSR,(double)(i-1)/sections); 
+	                   //Frequency difference at each Ramp Rate Update within each section
+	                   DFLS=DFLS/((duration/sections)*RampRate);	 
+
+	                   sDFW=DFW(DFLS,DDSCLK);  
+					   UpdateDFW(this, sDFW, opt1, COM_ON);
+          
+		               //Update amplitude once
+	                   sATW=ATW(SIN2(AMP_PK, (double)i/sections));  
+	                   UpdateATW(this, sATW, opt1, opt2, COM_ON); //update output once
+	                } 
+
+				/*************************************************************
+	             * Always set delta frequency word and amplitude to 0              
+	             * This will also allow the last section to finish output RF */
+	   	        sDFW=DFW(0.0,DDSCLK);  //ZERO DFW
+		        sATW=ATW(0.0); //ZERO AMP
+                UpdateDFW(this, sDFW, opt1, COM_ON);
+	            UpdateATW(this, sATW, opt1, opt2, COM_ON); //update output once  
+			 break;
+
+			case 7:   //Composite Half AFPs
+			     // Update Frequency Tunning Word once
+	             f_start=f0-HSR; //start frequency  
+	             sFTW=FTW(f_start,DDSCLK);  
+				 UpdateFTW(this, sFTW, opt1, COM_ON); 
+
+				 append(Str2Int(HexAdd(COM_ON,"1F",Bin2Hex(CR1FCLR1),opt2))); 
+
+				 //Loop ARP pulse CompositeN times, each time clear frequency/phase register and write a phase offset
+				 for (unsigned icn=1; icn<=2; icn++)
+				 {
+					   /***************************************************************************/ 
+					   //Clear frequency accumulator ACC1 and return to begining frequency FTW1
+                       
+		               append(Str2Int(HexAdd(COM_ON,"1F",Bin2Hex(CR1F),opt1))); //Ext. Update clock 
+
+					   //Real-time update delta frequency word and amplitude
+					   UPDATE_REG_SIZE=8; 
+					   sections=(unsigned int)floor(duration*FIFOCLK/UPDATE_REG_SIZE); 
+
+					   //Update  Phase register once    
+					    if (icn==1)  
+						{
+							CompositePIPhase=0.0; //shift the 2nd pulse by 90 degrees
+							sPHR=PHR(CompositePIPhase, PI); //PHR(double phase, double unit)
+							UpdatePHR(this, sPHR, opt1, COM_ON);
+
+						   for (unsigned int i=1;i<=unsigned int(sections/2);i++)
+							   { 
+									//Frequency start-end difference for each section
+									DFLS=Freq(f0,HSR,(double)i/sections)-Freq(f0,HSR,(double)(i-1)/sections); 
+									//Frequency difference at each Ramp Rate Update within each section
+									DFLS=DFLS/((duration/sections)*RampRate);	 
+
+									sDFW=DFW(DFLS,DDSCLK);
+									UpdateDFW(this, sDFW, opt1, COM_ON);
+          
+									//Update amplitude once
+									sATW=ATW(SIN2(AMP_PK, (double)i/sections));  
+									UpdateATW(this, sATW, opt1, opt2, COM_ON); //update output once
+								}
+						}
+
+				       //Update  Phase register once    
+					    if (icn==2)  
+						{
+							CompositePIPhase=0.5; //shift the 2nd pulse by 90 degrees
+							sPHR=PHR(CompositePIPhase, PI); //PHR(double phase, double unit)
+							UpdatePHR(this, sPHR, opt1, COM_ON); 
+
+							 for (unsigned int i=unsigned int(sections/2);i<=sections;i++)
+							   { 
+									//Frequency start-end difference for each section
+									DFLS=Freq(f0,HSR,(double)i/sections)-Freq(f0,HSR,(double)(i-1)/sections); 
+									//Frequency difference at each Ramp Rate Update within each section
+									DFLS=DFLS/((duration/sections)*RampRate);	 
+
+									sDFW=DFW(DFLS,DDSCLK);
+									UpdateDFW(this, sDFW, opt1, COM_ON);
+          
+									//Update amplitude once
+									sATW=ATW(SIN2(AMP_PK, (double)i/sections));  
+									UpdateATW(this, sATW, opt1, opt2, COM_ON); //update output once
+								} 
+						}
+           
 				        /**********************************************************
 	                     * Always set delta frequency word and amplitude to 0              
 	                     * This will also allow the last section to finish output RF */

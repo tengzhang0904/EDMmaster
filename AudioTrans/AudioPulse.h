@@ -26,8 +26,8 @@ using namespace std;
 using namespace libxl;
 
 #define PI 3.141592653589793
-#define AoSampleRate 50000.0 //AO sample rate in Hz
-#define EstSapNum 5000  //estimated sampel number, length > actual SampleNum
+#define AoSampleRate 20000.0 //AO sample rate in Hz
+#define EstSapNum 50000  //estimated sampel number, length > actual SampleNum
 
 string AOChls="Dev4/ao0"; //specify AO channel(s) for the audio waveform
 string DOChls="Dev4/port0"; //digital output channels on the AO card
@@ -129,7 +129,7 @@ bool AudioPulse::ReadExcel(string filename,const unsigned row) //read para from 
    Book* book = xlCreateBook();
    if(book->load(filename.c_str())) //open the excel book
    {
-      Sheet* sheet = book->getSheet(0); //get 1st sheet fromt the excel book
+      Sheet* sheet = book->getSheet(1); //get 2nd sheet fromt the excel book
       if(sheet)
       {
             basefreq=sheet->readNum(row, 0); // base frequency in Hz 
@@ -293,5 +293,160 @@ void MMCDigit8::updateDigPort()//update digital port once
 		   printf("DAQmx Error: %s\n",errBuff);
 }
 
-#endif
 
+
+/****************************************************************************************************
+*  This class Generates two low frequency oscillating magnetic waaveforms
+*****************************************************************************************************/
+
+class MagPulse {
+	
+public:
+	float64 data[EstSapNum]; //array to store waveform data
+	uInt32 SampleNumB; //actual sample number of a single pulse
+
+	void init(); //initialize the data array
+	bool Calculate(void); //calculate data array
+	bool WriteFile(string filename); //write calculated waveform data array to a txt file
+	float64 Field(float64 t); //generates oscillating magentic field function
+	float64 Shape(float64 t); //shpaes the field in the form of a blackman pulse
+	bool ExcelRead(string excel, const unsigned); //gets pulse paramters from excel file
+	bool AudioDoppioExe(float timeout);//flash the calculated data to AO device
+
+private:
+	float64 centerfreq; //center frequency in Hz
+	float64 delta; //shift in frequency
+	float64 amplitude; //amplitude of waveform
+	float64 duration; //pulse duration in ms
+
+};
+
+void MagPulse::init() //initilize data array 
+{
+	SampleNumB=10;
+	for (int i=0;i<EstSapNum;i++)
+	{
+		data[i]=0.0;
+	}
+}
+
+bool MagPulse::Calculate(void) //calculate data array
+{
+	//caculate the first pulse
+	SampleNumB = (uInt32)ceil((duration*0.001)*AoSampleRate);
+	for (unsigned int i = 0; i<SampleNumB; i++)
+	{
+		data[i] = this->Field(((double)i) / AoSampleRate);
+	}
+	if (SampleNumB%2==1)  //check to ensure SampleNum is even, otherwise add another zero
+	{ 
+		SampleNumB++; data[SampleNumB-1]=0.0;
+	}
+	return true;
+}
+
+float64 MagPulse::Field(float64 t) //generates osc mag field pulse function
+{
+	float64 freq_A; 
+	freq_A = centerfreq + (delta/2);
+	float64 freq_B;
+	freq_B = centerfreq - (delta/2);
+	return amplitude*(cos(2*PI*t*(freq_A))+cos(2*PI*t*(freq_B)))*(this->Shape(t)); // the amplitude needs to be calibrated
+	
+}
+
+float64 MagPulse::Shape(float64 t) //shapes to blackman pulse
+{
+	return 0.42 - 0.5*cos(2*PI*(t/(duration*0.001) )) + 0.08*cos(4*PI*(t/(duration*0.001) ));
+}
+
+bool MagPulse::ExcelRead(string filename, const unsigned row) //read parameters from excel file
+{
+	Book* book = xlCreateBook();
+	if (book->load(filename.c_str())) //open the excel book
+	{
+		Sheet* sheet = book->getSheet(0); //get 1nd sheet from the excel book
+		if (sheet)
+		{
+			centerfreq = sheet->readNum(row, 0); //center frequency in Hz 
+			delta = sheet->readNum(row, 1); //shift in frequency 
+			amplitude = sheet->readNum(row, 2); //amplitude in 
+			duration = sheet->readNum(row, 3); //duration in ms
+		}
+	}
+	book->release();
+
+	if (centerfreq>0 && delta>0 ) //check whether reading is sucessful
+	{
+		cout << centerfreq << "  " << delta << "  " << amplitude << "  "
+			<< duration << endl;
+		return true;
+	}
+	else
+	{
+		cout << "MagTrans:: End of pulse, or unable to read pulse in the specified row" << endl;
+		return false;
+	}
+}
+
+bool MagPulse::WriteFile(string filename) //write calculated waveform data array to a txt file
+{
+	ofstream datalog(filename.c_str(), ios::out | ios::trunc);
+	datalog.setf(ios::fixed, ios::floatfield);
+	datalog.setf(ios::showpoint);
+	unsigned int i = 0;
+	while (i < SampleNumB)
+	{
+		datalog << data[i]  << endl;
+		if (!datalog)   break;
+		else   ++i;
+	}
+	if (i < SampleNumB - 1)
+	{
+		cerr << "AudioPulse::Error writing to file " << filename << endl;
+		return false;
+	}
+	cout << "AudioPulse:: " << i << " samples written to file" << endl << filename << endl;
+	return true;
+}
+
+bool MagPulse::AudioDoppioExe(float timeout)//flash the calculated data to AO device
+{
+	#define DAQmxErrChk(functionCall) if( DAQmxFailed(error=(functionCall)) ) goto Error; else
+
+	int         error=0;
+	TaskHandle  taskHandle=0;
+	char        errBuff[2048]={'\0'};
+	int32   	written;
+
+	/*********************************************/
+	// DAQmx Configure Code
+	/*********************************************/
+	DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
+	DAQmxErrChk (DAQmxCreateAOVoltageChan(taskHandle,AOChls.c_str(),"",-10.0,10.0,DAQmx_Val_Volts,NULL));
+	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,"",AoSampleRate,DAQmx_Val_Rising,DAQmx_Val_FiniteSamps,SampleNumB));
+	DAQmxErrChk (DAQmxCfgDigEdgeStartTrig(taskHandle,"/Dev4/PFI1",DAQmx_Val_Rising));
+	DAQmxErrChk (DAQmxTaskControl(taskHandle,DAQmx_Val_Task_Commit));
+
+
+    //Flash one pulse ONLY
+	DAQmxErrChk (DAQmxWriteAnalogF64(taskHandle,SampleNumB,0,10.0,DAQmx_Val_GroupByChannel,data,&written,NULL)); 
+	printf("Audio:: %d samples written to FIFO\n", written);
+	DAQmxErrChk (DAQmxStartTask(taskHandle));
+	DAQmxErrChk (DAQmxWaitUntilTaskDone(taskHandle,timeout));
+	DAQmxStopTask(taskHandle);
+
+
+  Error:
+	if( DAQmxFailed(error) )
+		DAQmxGetExtendedErrorInfo(errBuff,2048);
+	if( taskHandle!=0 ) {
+		DAQmxStopTask(taskHandle);
+		DAQmxClearTask(taskHandle);
+	}
+	if( DAQmxFailed(error) )
+		printf("Audio::DAQmx Error: %s\n",errBuff);
+	return 0;
+}
+
+#endif

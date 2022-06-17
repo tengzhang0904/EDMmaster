@@ -16,7 +16,7 @@ namespace DEVICEHEADER
     #include "AudioTrans/AudioPulse_MT.h"
     #include "DDS/DDS_MT.h"
     #include "HV DIVIDER/HVDivider_MT.h"
-    #include "MonitorsAI/MonitorsAI_MT.h"
+    #include "MonitorsAI/MonitorsAI.h"
     #include "PDA/PDA.h"
     #include "CurrentSource/CurrentSource_MT.h"
     #include "Pause Timing/TimingPause_MT.h"

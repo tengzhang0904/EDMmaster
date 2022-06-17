@@ -24,7 +24,7 @@ using namespace std;
 #pragma comment(lib, "libxl.lib")
 using namespace libxl;
 
-string AIChls="DevAI/ai0:15"; //specify AI channel(s) for monitors input // change this to DevAI from cDAQ1Mod1
+string AIChls="DevAI/ai0:15"; //specify AI channel(s) for monitors input
 string AIpat="DevAI/ai30:31"; //use last 2 channels as pattern match channel
 
 #include "CONST.h"
@@ -68,8 +68,10 @@ bool Amonitors::Measure(unsigned int shotid) //measurement from AI device
 	char        errBuff[2048]={'\0'};
 
 	DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
-	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,AIChls.c_str(),"",DAQmx_Val_Cfg_Default,-10.0,10.0,DAQmx_Val_Volts,NULL));
+	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,AIChls.c_str(),"",DAQmx_Val_Cfg_Default,-5.0,5.0,DAQmx_Val_Volts,NULL));
 	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,"",1000.0,DAQmx_Val_Rising,DAQmx_Val_FiniteSamps,AMNumChls));
+	DAQmxErrChk (DAQmxCfgDigEdgeStartTrig(taskHandle,"/DevAI/PFI0",DAQmx_Val_Rising));
+
 	DAQmxErrChk (DAQmxStartTask(taskHandle));
 	DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,1,10.0,DAQmx_Val_GroupByChannel,this->data[shotid],AMNumChls,&read,NULL));
 	printf("AImonitors:: shotid %d : acquired %d points\n",shotid,read*AMNumChls); 

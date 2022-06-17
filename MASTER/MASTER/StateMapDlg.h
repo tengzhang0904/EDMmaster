@@ -29,14 +29,10 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
-	HICON m_hIcon_map; // This variable is add by Teng to create icon for state map dlg
-
 	DECLARE_MESSAGE_MAP()
 public:
 	CString m_StateMapMessage;
 	CNtgraphctrl m_Graph_StateMap;
 
 	afx_msg void OnBnClickedButtonPlotmap();
-	//afx_msg void OnBnClickedButtonZero(); // This button is added by Teng to test
-
 };

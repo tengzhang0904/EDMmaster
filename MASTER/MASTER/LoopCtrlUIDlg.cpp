@@ -12,7 +12,7 @@
 IMPLEMENT_DYNAMIC(LoopCtrlUIDlg, CDialogEx)
 
 LoopCtrlUIDlg::LoopCtrlUIDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(LoopCtrlUIDlg::IDD, pParent) //Initializer list
+	: CDialogEx(LoopCtrlUIDlg::IDD, pParent)
 	, m_MAG_SCAN_header(_T("B"))
 	, m_LarmorThreshold(1000.1)
 	, m_MAG_SCAN_MAX_ITERATIONS(3)
@@ -21,7 +21,7 @@ LoopCtrlUIDlg::LoopCtrlUIDlg(CWnd* pParent /*=NULL*/)
 	, m_EDM_SCAN_STEPS(64)
 	, m_AutoMasterLoop_REPEATS(1)
 {
-	UpdateAndStart=FALSE; //Construct (after Initializer)
+	UpdateAndStart=FALSE;
 }
 
 LoopCtrlUIDlg::~LoopCtrlUIDlg()

@@ -206,8 +206,6 @@ BEGIN_MESSAGE_MAP(CMASTERDlg, CDialogEx)
 	ON_COMMAND(ID_ANALYZE_VIEWEDMSCANDATA, &CMASTERDlg::OnAnalyzeViewedmscandata)
 	ON_COMMAND(ID_COMPOSITE_AUTOMATEDEDM, &CMASTERDlg::OnCompositeAutomatededm)
 	ON_COMMAND(ID_COMPOSITE_AUTOMAGNETOMETRY, &CMASTERDlg::OnCompositeAutomagnetometry)
-	ON_EN_CHANGE(IDC_HVvol, &CMASTERDlg::OnEnChangeHvvol)
-	ON_BN_CLICKED(IDC_BUTTONZero, &CMASTERDlg::OnBnClickedButtonZero) 
 END_MESSAGE_MAP()
 
 
@@ -256,12 +254,12 @@ BOOL CMASTERDlg::OnInitDialog()
 	m_GRAPH_PDA.SetFrameStyle(5);
 	m_GRAPH_PDA.SetXLabel("Pixels  +Z[1,25]  -Z[25,50]");
     m_GRAPH_PDA.SetYLabel("Atom Signal (a.u.)");
-	m_GRAPH_PDA.SetCaption(" PDA Signal  ");
+	m_GRAPH_PDA.SetCaption("   ");
 	m_GRAPH_PDA.AutoRange();
 
 	//Sweep progress bar
 	m_SWPPROGRESSCtrl.SetBkColor(RGB(216, 191, 216));
-    m_SWPPROGRESSCtrl.SetBarColor(RGB(128, 255, 0));
+    m_SWPPROGRESSCtrl.SetBarColor(RGB(148, 0, 211));
 
 	//Analysis report 
 	m_RICHEDIT_RPTCTRL.SetBackgroundColor(false,RGB(238, 221, 130));
@@ -460,8 +458,6 @@ void CMASTERDlg::OnHelpDocumentation()
 
 //Implementation for Single tasks
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 void CMASTERDlg::OnBnClickedButtonmicrowave()
 {
 	ShellExecute(NULL,NULL,MMCfolderC+_T("/DDS/PulseTrainParameters.xls"),NULL,NULL,SW_SHOWNORMAL);
@@ -525,7 +521,8 @@ void CMASTERDlg::OnMicrowaveddsCalculateandoutput()
 
 void CMASTERDlg::OnAtomicAudiotransitions()
 {
-	Audio(1); //use parameters in row 2, which is row 3 shown in the excel file.
+	//Audio(1); //use parameters in row 2
+	AudioDoppio(1);
 	m_BULLETIN=_T("Audio Transitions data computation and output complete");
 	UpdateData(FALSE);
 }
@@ -573,7 +570,7 @@ void CMASTERDlg::OnAtomicCurrentsource()
 	double cur[8]={0.0};
 	ReadCoilCurrent(cur);
 	UpdateAllCurrents(cur[0],cur[1],cur[2],cur[3],cur[4],cur[5],cur[6],cur[7]);
-	m_BULLETIN=_T("Current source output complete");
+	//m_BULLETIN=_T("Current source output complete");
 	
 	string curs="Update currents (uA)\n"; //output message
 	for (int i=0; i<8; i++)
@@ -647,7 +644,7 @@ void CMASTERDlg::OnCompositeParalleltasking()
 	if (m_Parallel_HV) 
 		threads.push_back(std::thread(HVgetShow, this, 3));
 	if (m_Parallel_Monitor) 
-		threads.push_back(std::thread(MonitorgetShow, this, 1));
+		threads.push_back(std::thread(MonitorgetShow, this, 5));
 	if (m_Parallel_PDA) 
 		threads.push_back(std::thread(PDAgetShow, this));
 	if (m_Parallel_ExtField) 
@@ -740,7 +737,7 @@ void CMASTERDlg::OnBnClickedButtonParasweep()
 		StepValue=SweepValueAt(k, SWP_Initial, SWP_Final, SWP_Steps, SWP_Type);
 
 		//parameter excel file update (func will skip if para-file not exist or unnecessary)
-		SweepSetValue(SWP_File, (LPCTSTR)SWP_Cell, StepValue); 
+		SweepSetValue(SWP_File, (LPCTSTR)SWP_Cell, StepValue);  // Ramsey fringe needs 2 frequency change at a time
 
 		//update curreent source first
 		this->OnAtomicCurrentsource();
@@ -758,13 +755,13 @@ void CMASTERDlg::OnBnClickedButtonParasweep()
 		if (SWP_File==3) //delay timing selected
 		    threads.push_back(std::thread(TimingPause, StepValue));
 	    if (m_Parallel_Audio)
-		    threads.push_back(std::thread(Audio, 1));
+		    threads.push_back(std::thread(AudioDoppio, 1));
 	    if (m_Parallel_DDS) 
-		    threads.push_back(std::thread(DDS, 1, 2));   //choose option 2 for output .txt and 3 for calculate-output .xls
+		    threads.push_back(std::thread(DDS, 1, 3));   //choose option 2 for output .txt and 3 for calculate-output .xls
 	    if (m_Parallel_HV) 
 		    threads.push_back(std::thread(HVgetShow, this, 3));
 	    if (m_Parallel_Monitor) 
-		    threads.push_back(std::thread(MonitorgetShow, this, 1));
+		    threads.push_back(std::thread(MonitorgetShow, this, 5));
 	    if (m_Parallel_PDA) 
 		    threads.push_back(std::thread(PDAgetShow, this));
 	    if (m_Parallel_ExtField) 
@@ -2264,33 +2261,3 @@ void CMASTERDlg::OnCompositeAutomatededm()
 
 }
 
-
-void CMASTERDlg::OnEnChangeHvvol()
-{
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
-
-	// TODO:  Add your control notification handler code here
-}
-
-
-void CMASTERDlg::OnBnClickedButtonZero() // This method is to zero all digital output channels by Teng
-{
-	// Currently the relevant output channels are:
-	// asynchronous digital lines including HV polarity control;
-	// low current source control lines;
-
-	// First zero all asynchronous digital lines:
-	AudioDportZero();
-
-	// Zero all low current control lines
-	double cur[8]={0.0};
-	UpdateAllCurrents(cur[0],cur[1],cur[2],cur[3],cur[4],cur[5],cur[6],cur[7]);
-
-
-	m_BULLETIN=_T("Zero all digital lines complete");
-	UpdateData(FALSE);
-
-}

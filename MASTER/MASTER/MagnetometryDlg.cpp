@@ -12,7 +12,7 @@
 IMPLEMENT_DYNAMIC(MagnetometryDlg, CDialogEx)
 
 MagnetometryDlg::MagnetometryDlg(CWnd* pParent /*=NULL*/)
-	: CDialogEx(MagnetometryDlg::IDD, pParent) //Initializer list
+	: CDialogEx(MagnetometryDlg::IDD, pParent)
 	, m_BPYP(_T(""))
 	, m_BPYC(_T(""))
 	, m_BPYN(_T(""))

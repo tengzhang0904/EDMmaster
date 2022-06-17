@@ -45,7 +45,7 @@ bool TimingPause(float delay)
 
 	// DAQmx Configure Code
 	DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
-	DAQmxErrChk (DAQmxCreateCOPulseChanTime(taskHandle,"Dev5/ctr1","",DAQmx_Val_Seconds,DAQmx_Val_High,offset,delaytime,offset)); //idle state as HIGH
+	DAQmxErrChk (DAQmxCreateCOPulseChanTime(taskHandle,"Dev5/ctr1","",DAQmx_Val_Seconds,DAQmx_Val_Low,offset,offset,delaytime)); //idle state as HIGH
 	DAQmxErrChk (DAQmxCfgDigEdgeStartTrig(taskHandle,"/Dev5/PFI34",DAQmx_Val_Rising));  //set ext. start trigger
 
 	DAQmxErrChk (DAQmxStartTask(taskHandle)); // DAQmx Start Code

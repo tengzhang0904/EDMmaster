@@ -146,20 +146,5 @@
     <Image Include="res\edm.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\icon1.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\icon2.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\scan.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\scan_icon.jpg">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\scan.ico.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
   </ItemGroup>
 </Project>

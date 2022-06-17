@@ -1,4 +1,4 @@
-﻿Build started 2/21/2018 2:45:12 PM.
+﻿Build started 8/20/2020 4:29:48 PM.
      1>Project "C:\MMC_SYSINT\MASTER\MASTER\MASTER.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /D _AFXDLL /Gm /EHsc /RTC1 /MD /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"Debug\MASTER.pch" /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt stdafx.cpp
@@ -36,4 +36,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:14.00
+Time Elapsed 00:00:16.10

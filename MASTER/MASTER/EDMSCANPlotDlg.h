@@ -52,5 +52,4 @@ public:
 	BOOL m_ellipse_selected;
 	CNtgraphctrl m_Ramsey_Plot;
 	CNtgraphctrl m_elliptical_plot;
-	afx_msg void OnEnChangeRicheditEdmscanrpt();
 };
