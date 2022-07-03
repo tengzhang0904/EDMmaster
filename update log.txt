@@ -1,0 +1,4 @@
+This version mainly deals with the requirement of a relatively fast switching of high voltage polarity.
+It modifies the asyn digital lines class and the parameter scan window.
+
+Now the parameter scan takes two values of delta in the excel sheet, in row 5 and row 6, corresponding to the two values of 14 kV and 12 kV respectively.

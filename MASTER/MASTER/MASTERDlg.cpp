@@ -530,6 +530,7 @@ void CMASTERDlg::OnAtomicAudiotransitions()
 void CMASTERDlg::OnAtomicUpdateasyndigitallines()
 {
 	AudioDport();
+	//AudioDportPol(1);
 	m_BULLETIN=_T("8 asynchronous digital lines updated");
 	UpdateData(FALSE);
 }
@@ -644,7 +645,7 @@ void CMASTERDlg::OnCompositeParalleltasking()
 	if (m_Parallel_HV) 
 		threads.push_back(std::thread(HVgetShow, this, 3));
 	if (m_Parallel_Monitor) 
-		threads.push_back(std::thread(MonitorgetShow, this, 5));
+		threads.push_back(std::thread(MonitorgetShow, this, 1));
 	if (m_Parallel_PDA) 
 		threads.push_back(std::thread(PDAgetShow, this));
 	if (m_Parallel_ExtField) 
@@ -730,6 +731,7 @@ void CMASTERDlg::OnBnClickedButtonParasweep()
 	    m_Parallel_Temp};
 
 	DataPack CurrentPack;  
+	int polarity=0; // parameter to control the polarity or the 14 kV 12 kV alternation
 	for (int k=0; k<=SWP_Steps; k++)
 	{   
 		m_RICHEDIT_REPORT=_T(" ");
@@ -737,11 +739,14 @@ void CMASTERDlg::OnBnClickedButtonParasweep()
 		StepValue=SweepValueAt(k, SWP_Initial, SWP_Final, SWP_Steps, SWP_Type);
 
 		//parameter excel file update (func will skip if para-file not exist or unnecessary)
-		SweepSetValue(SWP_File, (LPCTSTR)SWP_Cell, StepValue);  // Ramsey fringe needs 2 frequency change at a time
+		//SweepSetValue(SWP_File, (LPCTSTR)SWP_Cell, StepValue); 
+
+		SweepSetValueInterleave(SWP_File, (LPCTSTR)SWP_Cell, StepValue,polarity); // update the parameter based on polarity
 
 		//update curreent source first
 		this->OnAtomicCurrentsource();
-
+		AudioDportPol(polarity); // always set the polarity early in a shot
+		
 		string Currentstep="Current step value\n"; //output message
 		Currentstep=Currentstep+to_string(StepValue)+"\n\n";
 	    m_RICHEDIT_REPORT=Currentstep.c_str()+m_RICHEDIT_REPORT;
@@ -761,7 +766,7 @@ void CMASTERDlg::OnBnClickedButtonParasweep()
 	    if (m_Parallel_HV) 
 		    threads.push_back(std::thread(HVgetShow, this, 3));
 	    if (m_Parallel_Monitor) 
-		    threads.push_back(std::thread(MonitorgetShow, this, 5));
+		    threads.push_back(std::thread(MonitorgetShow, this, 1));
 	    if (m_Parallel_PDA) 
 		    threads.push_back(std::thread(PDAgetShow, this));
 	    if (m_Parallel_ExtField) 
@@ -789,6 +794,8 @@ void CMASTERDlg::OnBnClickedButtonParasweep()
 		itoa(k,index,10);
 	    newfile=savedfile+string(index)+".txt";
 	    CurrentPack.WriteTXT(newfile); 
+
+		polarity = (polarity+1)%2; // alternate polarity after each scan poin
 	}//end of "for loop"
 
   }//end of "if: start scan" 

@@ -64,5 +64,19 @@ void AudioDport()//update 8 DO channels once on the AO card
 	delete Dport;
 }
 
+void AudioDportPol(int Pol)//update 8 DO channels once on the AO card based on the user defined polarity
+{   
+	const string audiofolder=MMCfolder+"AudioTrans/";
+    const string DportParaExcelFile=audiofolder+"DigitalLines.xls";
+
+	MMCDigit8 *Dport=new MMCDigit8();
+	Dport->updateDigit8(Pol);
+	//Dport->ReadExcel(DportParaExcelFile);
+
+	Dport->updateDigPort();
+	delete Dport;
+}
+
+
 #endif
 

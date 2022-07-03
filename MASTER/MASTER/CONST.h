@@ -22,6 +22,8 @@ namespace DATACONST
 
 	const unsigned short AMNumChls=16,AMNumShots=5;  //Analog monitors channels and shots
 
+	const unsigned short samplesize=60;
+
 
 	/**************************************************************************************
 	/* Magnetometry and EDM SCAN pixel grouping information

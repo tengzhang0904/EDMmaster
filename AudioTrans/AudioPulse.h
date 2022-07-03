@@ -225,6 +225,7 @@ class MMCDigit8{
 		  void init() {Digit8=0x00000000;} //default values
 	      void init(unsigned int []); //values from user: binary array
 		  void init(uInt32); //values from user: hex format
+		  void updateDigit8(int); // user defined digital channel values
 		  bool ReadExcel(string excel); //get digital line values from an excel file
 		  void updateDigPort();//update port once
 		  uInt32 getDigit8(){return Digit8;}
@@ -240,9 +241,19 @@ void MMCDigit8::init(unsigned int digit[8])//values from user: binary array
 	this->Digit8=data;
 }
 
+
 void MMCDigit8::init(uInt32 data)//values from user: hex format
 {   
 	if(data>=0&&data<=255) this->Digit8=data;
+	
+}
+
+void MMCDigit8::updateDigit8(int pol) // user define digital channel values
+{
+	if (pol == 1) // the first bit controls the polarity of the voltage
+	{
+		this->Digit8=0x00000001;
+	}
 	else  this->Digit8=0x00000000;
 }
 

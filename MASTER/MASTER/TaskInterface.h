@@ -248,19 +248,20 @@ void MonitorgetShow(CMASTERDlg *MasterDlg, unsigned int ids) //Analog monitors m
 	for (unsigned int k=0;k<ids;k++)
 	{
 	   MonitorA->Measure(k);
+	   MonitorA->Averaging();
 	}
-
     //const string monitorExcelFile=MMCfolder+"MonitorsAI/"+"MonitorsAI.xls";
 	//MonitorA->WriteXLS(monitorExcelFile);
 
-	MasterDlg->m_CAVITYP.Format("%.6f", MonitorA->data[0][0]); // Top Picoammeter
-	MasterDlg->m_CAVITYN.Format("%.6f", MonitorA->data[0][1]); // Bottom Picoammeter
-	MasterDlg->m_EXTBX.Format("%.6f", MonitorA->data[0][2]);  // -Z monitor 
-	MasterDlg->m_EXTBY.Format("%.6f", MonitorA->data[1][2]);
-	MasterDlg->m_EXTBZ.Format("%.6f", MonitorA->data[2][2]);
-	MasterDlg->m_BEAM1.Format("%.6f", MonitorA->data[3][2]);
-	MasterDlg->m_BEAM2.Format("%.6f", MonitorA->data[4][2]);
-	MasterDlg->m_BEAM3.Format("%.6f", MonitorA->data[0][4]);// +Z monitor
+
+	MasterDlg->m_CAVITYP.Format("%.6f", MonitorA->avedata[0]); // Top Picoammeter
+	MasterDlg->m_CAVITYN.Format("%.6f", MonitorA->avedata[1]); // Bottom Picoammeter
+	MasterDlg->m_EXTBX.Format("%.6f", MonitorA->avedata[2]);  // -Z monitor 
+	MasterDlg->m_EXTBY.Format("%.6f", MonitorA->avedata[3]);  // reflection 1
+	MasterDlg->m_EXTBZ.Format("%.6f", MonitorA->avedata[4]);  //reflection 2
+	//MasterDlg->m_BEAM1.Format("%.6f", MonitorA->avedata[5]);
+	//MasterDlg->m_BEAM2.Format("%.6f", MonitorA->data[6][0]);
+	//MasterDlg->m_BEAM3.Format("%.6f", MonitorA->data[7][0]);// +Z monitor
 	delete MonitorA; 
 }
 
@@ -329,10 +330,52 @@ bool SweepSetValue(int fileID, string cell, double value)
 	book->load(filename[fileID].c_str());
     Sheet* sheet = book->getSheet(0);
     sheet->writeNum(row, col, value);
-	if(fileID==1)
+    book->save(filename[fileID].c_str());
+    book->release(); 
+
+    return true;
+   }
+
+   else //para file not found or not necessary
+	return false;
+}
+
+//Set value (write to an excel file) at a given sweep step, also interleave the audio parameter for GSTP only
+bool SweepSetValueInterleave(int fileID, string cell, double value, int Pol)
+{
+  if (fileID<3)
+  {
+	string filename[3]={
+		MMCfolder+"CurrentSource/Settings.xls",
+		MMCfolder+"DDS/PulseTrainParameters.xls", 
+		MMCfolder+"AudioTrans/AudioPulse.xls"};
+
+	//compute cell location (row, col)
+	int row=0, col=0;
+	char colLetter=cell[0];
+	string rowNum=cell.erase(0,1);
+	row=atoi(rowNum.c_str())-1; //
+	col=static_cast<int>(colLetter)-65; //"A"=65
+
+    Book* book = xlCreateBook();
+	book->load(filename[fileID].c_str());
+    Sheet* sheet = book->getSheet(0);
+    sheet->writeNum(row, col, value);
+
+	if (fileID==2) // we only use this section when we scan the audio frequency for GSTP measurement
 	{
-		sheet->writeNum(row+1, col, value);// Ramsey fringe needs 2 frequency change at a time
+		float64 d14,d12; // define the two alternating deltas for the two voltages
+		d14 = sheet->readNum(4,1);
+		d12 = sheet->readNum(5,1);
+
+		if (Pol == 0) // when the polarity channel is 0, use the delta for 12 kV
+		{
+			sheet->writeNum(2,1,d12);
+		}
+		else 
+			sheet->writeNum(2,1,d14);
 	}
+
     book->save(filename[fileID].c_str());
     book->release(); 
 

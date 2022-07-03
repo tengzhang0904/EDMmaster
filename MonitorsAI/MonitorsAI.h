@@ -34,9 +34,12 @@ class Amonitors{
 
    public:
 	   float64 data[AMNumShots][AMNumChls]; //data array
+	   float64 datac[AMNumChls*samplesize];
+	   float64 avedata[AMNumChls];
 	   void init(); //initialize data array
 	   bool Measure(unsigned int shotid); //measurement from AI device
 	   bool WriteXLS(string fielname); //write data to an excel file
+	   bool Averaging(); // average data for all sample size
 };
 
 void Amonitors::init() //initialize data array
@@ -48,7 +51,13 @@ void Amonitors::init() //initialize data array
 		{
 			data[i][j]=0.0;
 		}
+		   avedata[j]=0.0;
 	}
+	   for(unsigned int k=0; k< AMNumChls*10;k++)
+	   {
+		   datac[k]=0;
+	   }
+
 }
 
 bool Amonitors::Measure(unsigned int shotid) //measurement from AI device
@@ -68,13 +77,18 @@ bool Amonitors::Measure(unsigned int shotid) //measurement from AI device
 	char        errBuff[2048]={'\0'};
 
 	DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
-	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,AIChls.c_str(),"",DAQmx_Val_Cfg_Default,-5.0,5.0,DAQmx_Val_Volts,NULL));
-	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,"",1000.0,DAQmx_Val_Rising,DAQmx_Val_FiniteSamps,AMNumChls));
+	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,AIChls.c_str(),"",DAQmx_Val_Cfg_Default,-10.0,10.0,DAQmx_Val_Volts,NULL));
+	//DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,"",60.0,DAQmx_Val_Rising,DAQmx_Val_FiniteSamps,AMNumChls));
+	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,"",60.0,DAQmx_Val_Rising,DAQmx_Val_FiniteSamps,samplesize));
 	DAQmxErrChk (DAQmxCfgDigEdgeStartTrig(taskHandle,"/DevAI/PFI0",DAQmx_Val_Rising));
 
 	DAQmxErrChk (DAQmxStartTask(taskHandle));
-	DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,1,10.0,DAQmx_Val_GroupByChannel,this->data[shotid],AMNumChls,&read,NULL));
+	//DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,1,10.0,DAQmx_Val_GroupByChannel,this->data[shotid],AMNumChls,&read,NULL));
+	DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,samplesize,10.0,DAQmx_Val_GroupByScanNumber,this->datac,AMNumChls*samplesize,&read,NULL));
+	//DAQmxErrChk (DAQmxReadAnalogF64(taskHandle,samplesize,10.0,DAQmx_Val_GroupByChannel,this->datac,AMNumChls*samplesize,&read,NULL));
 	printf("AImonitors:: shotid %d : acquired %d points\n",shotid,read*AMNumChls); 
+
+	
 
   Error:
 	if( DAQmxFailed(error) )
@@ -89,6 +103,21 @@ bool Amonitors::Measure(unsigned int shotid) //measurement from AI device
 	return true;
   }
 }
+
+bool Amonitors::Averaging()
+{
+	for(unsigned int m=0; m < AMNumChls;m++)
+	{
+		for(unsigned int n=0; n< samplesize; n++)
+		{
+			(this->avedata[m])+=(this->datac[n*AMNumChls+m]);
+		}
+		(this->avedata[m])/=samplesize;
+	}
+	return true;
+	
+}
+
 
 bool Amonitors::WriteXLS(string filename) //write data to an excel file
 {   

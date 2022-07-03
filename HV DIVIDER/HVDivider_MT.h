@@ -43,7 +43,7 @@ float HVDivS() //measure once and return the data
 	HV->MeasureHV(1);
 	HVdat=HV->HVdataS;
 	delete HV;
-	HVdat=(float)-42078.56; //Test number
+	//HVdat=(float)-42078.56; //Test number
 	return HVdat;
 
 }

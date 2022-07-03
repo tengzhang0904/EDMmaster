@@ -85,7 +85,7 @@ void HVDivider::MeasureHV(int HVoptions)
    }
    
    /*Open a RS232 interface*/
-   status = viOpen (defaultRM, "ASRL9::INSTR", VI_NULL, VI_NULL, &instr);
+   status = viOpen (defaultRM, "ASRL1::INSTR", VI_NULL, VI_NULL, &instr);
    if (status < VI_SUCCESS) 
    {
       printf ("Cannot open a session to the device.\n");
@@ -220,6 +220,9 @@ ViStatus HVDivider::SetRS232(ViSession instr_num,ViStatus status_num)
 
     //Set the type of flow control used by the transfer mechanism
     status_num= viSetAttribute (instr_num, VI_ATTR_ASRL_FLOW_CNTRL, VI_ASRL_FLOW_NONE);
+
+	//Set timeout
+	status_num= viSetAttribute (instr_num, VI_ATTR_TMO_VALUE, 3000);
 
     return status_num;
  }
